@@ -1,32 +1,23 @@
-# xtend
+# EduFlow Python
 
-[![browser support][3]][4]
+A comprehensive school management system built with Python and Flask.
 
-[![locked](http://badges.github.io/stability-badges/dist/locked.svg)](http://github.com/badges/stability-badges)
+## Features
 
-Extend like a boss
+- Student management
+- Grade level tracking
+- Academic year management
+- Admin dashboard
+- School dashboard
+- Student portal
 
-xtend is a basic utility library which allows you to extend an object by appending all of the properties from each object in a list. When there are identical properties, the right-most property takes precedence.
+## Installation
 
-## Examples
+1. Clone the repository
+2. Install dependencies with `pip install -r requirements.txt`
+3. Set up the database
+4. Run the server with `python server.py`
 
-```js
-var extend = require("xtend")
+## License
 
-// extend returns a new object. Does not mutate arguments
-var combination = extend({
-    a: "a",
-    b: "c"
-}, {
-    b: "b"
-})
-// { a: "a", b: "b" }
-```
-
-## Stability status: Locked
-
-## MIT Licensed 
-
-
-  [3]: http://ci.testling.com/Raynos/xtend.png
-  [4]: http://ci.testling.com/Raynos/xtend
+MIT Licensed
