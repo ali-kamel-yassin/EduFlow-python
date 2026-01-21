@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم المدرسة - EduFlow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/enhanced.css">
+    
+    <!-- Responsive CSS for school dashboard -->
+    <style>
+        /* Ensure proper responsive behavior */
+        .dashboard-header {
+            flex-wrap: wrap;
+            gap: 1rem;
+            padding: 1rem;
+        }
+        
+        .dashboard-title {
+            flex: 1;
+            min-width: 250px;
+            margin: 0;
+        }
+        
+        /* Performance indicators responsive layout */
+        .performance-indicators {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        .indicator-card {
+            min-width: 120px;
+            padding: 1rem;
+        }
+        
+        .indicator-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .indicator-label {
+            font-size: 0.9rem;
+        }
+        
+        /* Charts container responsive layout */
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .chart-wrapper {
+            min-height: 250px;
+            position: relative;
+        }
+        
+        /* AI Predictions responsive layout */
+        .predictions-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .prediction-card {
+            padding: 1rem;
+        }
+        
+        .prediction-card h4 {
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        /* Grade levels container responsive improvements */
+        #gradeLevelsContainer .grades-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .grade-card {
+            min-width: 200px;
+        }
+        
+        /* Modal responsive improvements */
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95%;
+                padding: 1rem;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+            
+            .grades-table th,
+            .grades-table td {
+                padding: 0.5rem;
+                font-size: 0.85rem;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                border: 1px solid var(--gray-300);
+                border-bottom: 1px solid var(--gray-300);
+                margin-bottom: 0;
+            }
+            
+            .tab.active {
+                border: 1px solid var(--gray-300);
+                border-bottom: 1px solid var(--gray-300);
+                margin-bottom: 0;
+            }
+            
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .performance-indicators {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .section-card {
+                padding: 1rem;
+            }
+            
+            .h2-school {
+                font-size: 1.2rem;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            
+            .btn-small {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.8rem;
+            }
+            
+            .performance-indicators {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .indicator-card {
+                padding: 0.75rem;
+            }
+            
+            .indicator-value {
+                font-size: 1.5rem;
+            }
+            
+            .predictions-container {
+                grid-template-columns: 1fr;
+            }
+            
+            #gradeLevelsContainer .grades-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            .dashboard-header {
+                padding: 0.75rem;
+            }
+            
+            .section-title {
+                font-size: 1.1rem;
+            }
+            
+            .btn-small {
+                padding: 0.25rem 0.5rem;
+                font-size: 0.75rem;
+            }
+            
+            .th-school, .td-school {
+                padding: 0.4rem;
+                font-size: 0.8rem;
+            }
+            
+            .performance-indicators {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Ensure tables are responsive */
+        .table-responsive {
+            display: block;
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        /* Responsive table on mobile */
+        @media (max-width: 768px) {
+            .table-enhanced {
+                font-size: 0.9rem;
+            }
+            
+            .th-school, .td-school {
+                padding: 0.5rem;
+            }
+        }
+        
+        /* Action buttons responsive stacking */
+        .section-title .btn-primary-school {
+            margin-top: 0.5rem;
+            margin-right: 0 !important;
+            float: none !important;
+            display: inline-block;
+        }
+        
+        @media (max-width: 768px) {
+            .section-title {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .section-title .btn-primary-school {
+                margin-top: 0.5rem;
+                width: 100%;
+                text-align: center;
+                justify-content: center;
+            }
+        }
+        
+        /* Responsive placeholder messages */
+        .placeholder-message {
+            padding: 2rem;
+            text-align: center;
+            color: var(--gray-500);
+        }
+        
+        @media (max-width: 576px) {
+            .placeholder-message {
+                padding: 1rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="school-header dashboard-header">
+        <h1 class="dashboard-title"><i class="fas fa-school"></i> <span id="schoolName">لوحة تحكم المدرسة</span> <code class="code-btn" id="schoolCodeDisplay" style="display:none"></code> <span class="academic-year-display" id="currentAcademicYearDisplay" style="font-size: 0.8em; color: #6c757d; margin-right: 1rem; background: #e9ecef; padding: 0.25rem 0.5rem; border-radius: 4px;">السنة الدراسية: جاري التحميل...</span></h1>
+        <div class="header-controls" style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+            <!-- Export Students Button -->
+            <button onclick="exportStudentsToExcel()" class="btn-primary-school btn-small" style="background: linear-gradient(135deg, #28a745, #20c997); border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;" title="تصدير بيانات الطلاب إلى Excel">
+                <i class="fas fa-file-excel"></i> تصدير Excel
+            </button>
+
+            <button onclick="logout()" class="btn-primary-school btn-primary">
+                <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+            </button>
+        </div>
+    </header>
+
+    <main class="school-container" id="dashboardSection">
+        <!-- Grade Levels List (Shown immediately after authentication) -->
+        <section class="section-card">
+            <h2 class="h2-school section-title"><i class="fas fa-layer-group"></i> الصفوف الدراسية</h2>
+            <div id="gradeLevelsContainer">
+                <!-- Grade levels will be loaded here automatically after authentication -->
+                <div class="placeholder-message">
+                    <p>جارٍ تحميل الصفوف الدراسية...</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Performance Analytics Section -->
+        <section class="section-card" id="performanceAnalyticsSection" style="display: none;">
+            <h2 class="h2-school section-title"><i class="fas fa-chart-line"></i> تحليل الأداء التعليمي</h2>
+            <div class="form-row">
+                <div class="form-group-school">
+                    <label for="analyticsGradeLevel"><i class="fas fa-layer-group"></i> الصف الدراسي</label>
+                    <select id="analyticsGradeLevel" class="form-input" onchange="loadPerformanceAnalytics()">
+                        <option value="">اختر الصف</option>
+                    </select>
+                </div>
+                <div class="form-group-school">
+                    <label for="analyticsSubject"><i class="fas fa-book"></i> المادة الدراسية</label>
+                    <select id="analyticsSubject" class="form-input" onchange="loadPerformanceAnalytics()">
+                        <option value="">جميع المواد</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Performance Indicators -->
+            <div class="performance-indicators">
+                <div class="indicator-card">
+                    <div class="indicator-value" id="avgGrade">0</div>
+                    <div class="indicator-label">المعدل العام</div>
+                </div>
+                <div class="indicator-card">
+                    <div class="indicator-value" id="passRate">0%</div>
+                    <div class="indicator-label">معدل النجاح</div>
+                </div>
+                <div class="indicator-card">
+                    <div class="indicator-value" id="attendanceRate">0%</div>
+                    <div class="indicator-label">معدل الحضور</div>
+                </div>
+                <div class="indicator-card">
+                    <div class="indicator-value" id="excellenceRate">0%</div>
+                    <div class="indicator-label">معدل التفوق</div>
+                </div>
+            </div>
+            
+            <!-- Charts Container -->
+            <div class="charts-container">
+                <div class="chart-wrapper">
+                    <canvas id="gradesChart"></canvas>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="attendanceChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- AI Predictions -->
+            <div class="ai-predictions-section">
+                <h3><i class="fas fa-robot"></i> تنبؤات الذكاء الاصطناعي</h3>
+                <div class="predictions-container">
+                    <div class="prediction-card">
+                        <h4>الطلاب المتفوقون المتوقعون</h4>
+                        <ul id="topStudentsList"></ul>
+                    </div>
+                    <div class="prediction-card">
+                        <h4>الطلاب المتأخرون المتوقعون</h4>
+                        <ul id="strugglingStudentsList"></ul>
+                    </div>
+                    <div class="prediction-card">
+                        <h4>التوصيات التعليمية</h4>
+                        <ul id="recommendationsList"></ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Grade Level Content (Dynamically Loaded) -->
+        <section class="section-card">
+            <h2 class="h2-school section-title">
+                <i class="fas fa-book-open"></i> محتوى الصف
+                <button type="button" class="btn-add-subject" id="openSubjectsModalBtn" style="display: none;">
+                    <i class="fas fa-plus"></i> إضافة مادة دراسية | Add Subject
+                </button>
+                <button type="button" class="btn-primary-school btn-small" onclick="showPerformanceAnalytics()">
+                    <i class="fas fa-chart-bar"></i> تحليل الأداء
+                </button>
+            </h2>
+            <div id="gradeLevelContent">
+                <!-- Content will be loaded here based on grade level selection -->
+                <div class="placeholder-message">
+                    <p>يرجى اختيار صف لعرض المواد والطلاب</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- نموذج إدارة الدرجات -->
+    <div id="gradesModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('gradesModal')">&times;</span>
+            <h2 class="section-title"><i class="fas fa-chart-line"></i> إدارة درجات الطالب: <span id="gradesStudentName"></span> <code class="code-btn" id="gradesStudentCode"></code></h2>
+            
+            <!-- Performance Insights -->
+            <div class="performance-insights">
+                <h3><i class="fas fa-lightbulb"></i> رؤى الأداء</h3>
+                <div class="insights-container">
+                    <div class="insight-card">
+                        <div class="insight-title">المعدل العام</div>
+                        <div class="insight-value" id="studentAvgGrade">0</div>
+                    </div>
+                    <div class="insight-card">
+                        <div class="insight-title">التنبؤ بالأداء</div>
+                        <div class="insight-value" id="studentPerformancePrediction">متوسط</div>
+                    </div>
+                    <div class="insight-card">
+                        <div class="insight-title">التوصيات</div>
+                        <div class="insight-value" id="studentRecommendations">-</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grades-container table-responsive">
+                <table class="table-school table-enhanced grades-table">
+                    <thead>
+                        <tr>
+                            <th class="th-school">المادة</th>
+                            <th class="th-school">شهر أول</th>
+                            <th class="th-school">شهر ثاني</th>
+                            <th class="th-school">نصف السنة</th>
+                            <th class="th-school">شهر ثالث</th>
+                            <th class="th-school">شهر رابع</th>
+                            <th class="th-school">النهائي</th>
+                            <th class="th-school">النتيجة</th>
+                        </tr>
+                    </thead>
+                    <tbody id="gradesTableBody"></tbody>
+                    <tfoot>
+                        <tr class="totals-row">
+                            <th class="th-school">المجموع</th>
+                            <td class="td-school" id="month1Total">0</td>
+                            <td class="td-school" id="month2Total">0</td>
+                            <td class="td-school" id="midtermTotal">0</td>
+                            <td class="td-school" id="month3Total">0</td>
+                            <td class="td-school" id="month4Total">0</td>
+                            <td class="td-school" id="finalTotal">0</td>
+                            <td class="td-school">-</td>
+                        </tr>
+                        <tr class="average-row">
+                            <th class="th-school">المعدل</th>
+                            <td class="td-school" id="month1Average">0</td>
+                            <td class="td-school" id="month2Average">0</td>
+                            <td class="td-school" id="midtermAverage">0</td>
+                            <td class="td-school" id="month3Average">0</td>
+                            <td class="td-school" id="month4Average">0</td>
+                            <td class="td-school" id="finalAverage">0</td>
+                            <td class="td-school" id="overallAverage">0</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            
+            <button class="btn-primary-school btn-primary" style="margin-top: 1rem;" onclick="saveGrades()">
+                <i class="fas fa-save"></i> حفظ الدرجات
+            </button>
+        </div>
+    </div>
+
+    <!-- نموذج الحضور اليومي -->
+    <div id="attendanceModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('attendanceModal')">&times;</span>
+            <h2 class="section-title"><i class="fas fa-calendar-check"></i> حضور الطالب: <span id="attendanceStudentName"></span> <code class="code-btn" id="attendanceStudentCode"></code></h2>
+            
+            <!-- إضافة حضور جديد -->
+            <div class="attendance-form">
+                <h3>إضافة حضور يوم جديد</h3>
+                <div class="form-row">
+                    <div class="form-group-school">
+                        <label>التاريخ</label>
+                        <input type="date" id="attendanceDate" class="form-input">
+                    </div>
+                    <div class="form-group-school">
+                        <button class="btn-primary-school btn-primary" onclick="addDailyAttendance()">
+                            <i class="fas fa-plus"></i> إضافة يوم
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- جدول الحضور -->
+            <div class="attendance-container table-responsive">
+                <div id="attendanceTableContainer"></div>
+            </div>
+            
+            <button class="btn-primary-school btn-primary" style="margin-top: 1rem;" onclick="saveAttendance()">
+                <i class="fas fa-save"></i> حفظ الحضور
+            </button>
+        </div>
+    </div>
+
+    <!-- نموذج عرض معلومات الطالب -->
+    <div id="studentInfoModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('studentInfoModal')">&times;</span>
+            <h2 class="section-title"><i class="fas fa-user-circle"></i> معلومات الطالب</h2>
+            
+            <div class="student-info-container" style="padding: 1rem;">
+                <div class="info-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+                    <div class="info-card" style="background: var(--gray-100, #f8f9fa); padding: 1rem; border-radius: 8px;">
+                        <div class="info-label" style="font-size: 0.85rem; color: #6c757d; margin-bottom: 0.25rem;"><i class="fas fa-user"></i> اسم الطالب</div>
+                        <div class="info-value" id="infoStudentName" style="font-size: 1.1rem; font-weight: 600;">-</div>
+                    </div>
+                    <div class="info-card" style="background: var(--gray-100, #f8f9fa); padding: 1rem; border-radius: 8px;">
+                        <div class="info-label" style="font-size: 0.85rem; color: #6c757d; margin-bottom: 0.25rem;"><i class="fas fa-graduation-cap"></i> الصف الدراسي</div>
+                        <div class="info-value" id="infoStudentGrade" style="font-size: 1.1rem; font-weight: 600;">-</div>
+                    </div>
+                    <div class="info-card" style="background: var(--gray-100, #f8f9fa); padding: 1rem; border-radius: 8px;">
+                        <div class="info-label" style="font-size: 0.85rem; color: #6c757d; margin-bottom: 0.25rem;"><i class="fas fa-door-open"></i> القاعة</div>
+                        <div class="info-value" id="infoStudentRoom" style="font-size: 1.1rem; font-weight: 600;">-</div>
+                    </div>
+                    <div class="info-card" style="background: var(--gray-100, #f8f9fa); padding: 1rem; border-radius: 8px;">
+                        <div class="info-label" style="font-size: 0.85rem; color: #6c757d; margin-bottom: 0.25rem;"><i class="fas fa-id-card"></i> رمز الطالب</div>
+                        <div class="info-value"><code class="code-btn" id="infoStudentCode" onclick="copyToClipboard(this.textContent)" style="cursor: pointer;">-</code></div>
+                    </div>
+                    <div class="info-card" style="background: var(--gray-100, #f8f9fa); padding: 1rem; border-radius: 8px;">
+                        <div class="info-label" style="font-size: 0.85rem; color: #6c757d; margin-bottom: 0.25rem;"><i class="fas fa-phone"></i> رقم ولي الأمر</div>
+                        <div class="info-value" id="infoParentContact" style="font-size: 1.1rem; font-weight: 600;">-</div>
+                    </div>
+                    <div class="info-card" style="background: var(--gray-100, #f8f9fa); padding: 1rem; border-radius: 8px;">
+                        <div class="info-label" style="font-size: 0.85rem; color: #6c757d; margin-bottom: 0.25rem;"><i class="fas fa-tint"></i> فصيلة الدم</div>
+                        <div class="info-value" id="infoBloodType" style="font-size: 1.1rem; font-weight: 600;">-</div>
+                    </div>
+                    <div class="info-card" style="background: var(--gray-100, #f8f9fa); padding: 1rem; border-radius: 8px; grid-column: 1 / -1;">
+                        <div class="info-label" style="font-size: 0.85rem; color: #6c757d; margin-bottom: 0.25rem;"><i class="fas fa-heartbeat"></i> الأمراض المزمنة</div>
+                        <div class="info-value" id="infoChronicDisease" style="font-size: 1.1rem; font-weight: 600;">-</div>
+                    </div>
+                    <div class="info-card" style="background: var(--gray-100, #f8f9fa); padding: 1rem; border-radius: 8px; grid-column: 1 / -1;">
+                        <div class="info-label" style="font-size: 0.85rem; color: #6c757d; margin-bottom: 0.25rem;"><i class="fas fa-sticky-note"></i> الملاحظات</div>
+                        <div class="info-value" id="infoStudentNotes" style="font-size: 1.1rem; font-weight: 600;">-</div>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn-primary-school btn-primary" style="margin-top: 1rem;" onclick="closeModal('studentInfoModal')">
+                <i class="fas fa-times"></i> إغلاق
+            </button>
+        </div>
+    </div>
+
+    <!-- نموذج إدارة المواد والدرجات -->
+    <div id="subjectsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('subjectsModal')">&times;</span>
+            <h2 class="section-title"><i class="fas fa-book"></i> إدارة المواد والدرجات للطالب: <span id="modalStudentName"></span> <code class="code-btn" id="modalStudentCode"></code></h2>
+            
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('scores-tab')">الدرجات</div>
+                <div class="tab" onclick="switchTab('daily-attendance-tab')">الحضور اليومي</div>
+            </div>
+            
+            <!-- قسم الدرجات -->
+            <div id="scores-tab" class="tab-content active">
+                <h3>الدرجات الفصلية</h3>
+                <div class="form-row">
+                    <div class="form-group-school">
+                        <label>اسم المادة</label>
+                        <input type="text" id="subjectName" class="form-input">
+                    </div>
+                    <div class="form-group-school">
+                        <button class="btn-primary-school btn-primary" onclick="addSubject()">
+                            <i class="fas fa-plus"></i> إضافة مادة
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table-school table-enhanced scores-table">
+                        <thead>
+                            <tr>
+                                <th class="th-school">المادة</th>
+                                <th class="th-school">شهر الأول</th>
+                                <th class="th-school">شهر الثاني</th>
+                                <th class="th-school">نصف السنة</th>
+                                <th class="th-school">شهر الثالث</th>
+                                <th class="th-school">شهر الرابع</th>
+                                <th class="th-school">النهائي</th>
+                                <th class="th-school">الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="scoresTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- قسم الحضور اليومي -->
+            <div id="daily-attendance-tab" class="tab-content">
+                <h3>الحضور اليومي</h3>
+                <div class="form-row">
+                    <div class="form-group-school">
+                        <label>التاريخ</label>
+                        <input type="date" id="dailyAttendanceDate" class="form-input">
+                    </div>
+                    <div class="form-group-school">
+                        <label>الحالة</label>
+                        <select id="dailyAttendanceStatus" class="form-input">
+                            <option value="present">حاضر</option>
+                            <option value="absent">غائب</option>
+                            <option value="late">متأخر</option>
+                            <option value="excused">معذور</option>
+                        </select>
+                    </div>
+                    <div class="form-group-school">
+                        <button class="btn-primary-school btn-primary" onclick="addDailyAttendanceRecord()">
+                            <i class="fas fa-plus"></i> إضافة حضور
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table-school table-enhanced">
+                        <thead>
+                            <tr>
+                                <th class="th-school">التاريخ</th>
+                                <th class="th-school">الحالة</th>
+                                <th class="th-school">الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dailyAttendanceTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- SheetJS library for Excel export -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <script src="assets/js/school.js"></script>
+</body>
+</html>

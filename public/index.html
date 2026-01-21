@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduFlow - نظام إدارة المدارس المتكامل</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="assets/css/enhanced.css">
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="header-content">
+        <div class="logo">
+          <i class="fas fa-graduation-cap"></i>
+          <h1>EduFlow</h1>
+        </div>
+        <div class="nav-links">
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section id="home" class="hero">
+      <div class="container">
+        <div class="hero-content">
+          <h2><span class="emoji-icon">🎓</span> <span class="text-gradient">EduFlow</span></h2>
+          <p class="subtitle">نظام إدارة المدارس المتكامل</p>
+          <p class="subtitle">منصة شاملة لإدارة المدارس والطلاب والدرجات والحضور بطريقة حديثة وآمنة</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="role-selection">
+      <div class="container">
+        <div class="section-title">
+          <h3>اختر نوع الحساب</h3>
+          <p>قم بتسجيل الدخول حسب نوع حسابك للوصول إلى الأدوات المناسبة</p>
+        </div>
+        
+        <div class="roles-grid">
+          <div class="role-card admin animate-fade-in card-hover-effect">
+            <div class="role-icon">
+              <i class="fas fa-user-shield"></i>
+            </div>
+            <h4>مدير النظام</h4>
+            <p>إدارة شاملة للنظام، إضافة المدارس، مراقبة الإحصائيات العامة والتحكم في الصلاحيات</p>
+            <button class="btn btn-admin" onclick="showAdminLogin()">
+              <i class="fas fa-sign-in-alt"></i>
+              دخول المدير
+            </button>
+          </div>
+
+          <div class="role-card school animate-fade-in card-hover-effect">
+            <div class="role-icon">
+              <i class="fas fa-school"></i>
+            </div>
+            <h4>إدارة المدرسة</h4>
+            <p>إدارة الطلاب، المواد الدراسية، الدرجات، الحضور وجميع العمليات التعليمية اليومية</p>
+            <button class="btn btn-school" onclick="showSchoolLogin()">
+              <i class="fas fa-sign-in-alt"></i>
+              دخول المدرسة
+            </button>
+          </div>
+
+          <div class="role-card student animate-fade-in card-hover-effect">
+            <div class="role-icon">
+              <i class="fas fa-user-graduate"></i>
+            </div>
+            <h4>الطالب</h4>
+            <p>عرض الدرجات، متابعة الحضور، الاطلاع على المعلومات الشخصية والتقارير الدراسية</p>
+            <button class="btn btn-student" onclick="showStudentLogin()">
+              <i class="fas fa-sign-in-alt"></i>
+              دخول الطالب
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Admin Login Modal -->
+  <div id="adminLoginModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal" onclick="closeModal('adminLoginModal')">&times;</span>
+      <h3 class="modal-title">تسجيل الدخول كمسؤول</h3>
+      <form id="adminLoginForm">
+        <div class="form-group">
+          <label for="adminUsername">اسم المستخدم</label>
+          <input type="text" id="adminUsername" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label for="adminPassword">كلمة المرور</label>
+          <input type="password" id="adminPassword" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-admin" style="width: 100%">دخول</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- School Login Modal -->
+  <div id="schoolLoginModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal" onclick="closeModal('schoolLoginModal')">&times;</span>
+      <h3 class="modal-title">تسجيل الدخول كمدرسة</h3>
+      <form id="schoolLoginForm">
+        <div class="form-group">
+          <label for="schoolCode">رمز المدرسة</label>
+          <input type="text" id="schoolCode" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-school" style="width: 100%">دخول</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Student Login Modal -->
+  <div id="studentLoginModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal" onclick="closeModal('studentLoginModal')">&times;</span>
+      <h3 class="modal-title">تسجيل الدخول كطالب</h3>
+      <form id="studentLoginForm">
+        <div class="form-group">
+          <label for="studentCode">رمز الطالب</label>
+          <input type="text" id="studentCode" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-student" style="width: 100%">دخول</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // وظائف إدارة النوافذ المنبثقة
+    function showAdminLogin() {
+      document.getElementById('adminLoginModal').style.display = 'flex';
+    }
+
+    function showSchoolLogin() {
+      document.getElementById('schoolLoginModal').style.display = 'flex';
+    }
+
+    function showStudentLogin() {
+      document.getElementById('studentLoginModal').style.display = 'flex';
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).style.display = 'none';
+    }
+
+    // إغلاق النافذة عند النقر خارجها
+    window.onclick = function(event) {
+      const modals = document.getElementsByClassName('modal');
+      for (let i = 0; i < modals.length; i++) {
+        if (event.target == modals[i]) {
+          modals[i].style.display = "none";
+        }
+      }
+    }
+
+    // معالجة نموذج تسجيل الدخول للمسؤول
+    document.getElementById('adminLoginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const username = document.getElementById('adminUsername').value;
+      const password = document.getElementById('adminPassword').value;
+      
+      try {
+        const response = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username, password })
+        });
+        
+        if (!response.ok) {
+          const errorResult = await response.json();
+          throw new Error(errorResult.error || 'فشل تسجيل الدخول');
+        }
+        
+        const result = await response.json();
+        // Store token and user info
+        localStorage.setItem('token', result.token);
+        localStorage.setItem('user', JSON.stringify(result.user));
+        
+        alert('تم تسجيل الدخول بنجاح!');
+        closeModal('adminLoginModal');
+        
+        // Redirect to admin dashboard
+        window.location.href = '/admin-dashboard.html';
+      } catch (error) {
+        console.error('Login error:', error);
+        alert(error.message || 'حدث خطأ في الاتصال بالخادم');
+      }
+    });
+
+    // معالجة نموذج تسجيل الدخول للمدرسة
+    document.getElementById('schoolLoginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const code = document.getElementById('schoolCode').value;
+      
+      try {
+        const response = await fetch('/api/school/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ code })
+        });
+        
+        if (!response.ok) {
+          const errorResult = await response.json();
+          throw new Error(errorResult.error || 'فشل تسجيل الدخول');
+        }
+        
+        const result = await response.json();
+        // Store token and school info
+        localStorage.setItem('token', result.token);
+        localStorage.setItem('school', JSON.stringify(result.school));
+        
+        alert('تم تسجيل الدخول بنجاح!');
+        closeModal('schoolLoginModal');
+        
+        // Redirect to school dashboard
+        window.location.href = '/school-dashboard.html';
+      } catch (error) {
+        console.error('Login error:', error);
+        alert(error.message || 'حدث خطأ في الاتصال بالخادم');
+      }
+    });
+
+    // معالجة نموذج تسجيل الدخول للطالب
+    document.getElementById('studentLoginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const code = document.getElementById('studentCode').value;
+      
+      try {
+        const response = await fetch('/api/student/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ code })
+        });
+        
+        if (!response.ok) {
+          const errorResult = await response.json();
+          throw new Error(errorResult.error || 'فشل تسجيل الدخول');
+        }
+        
+        const result = await response.json();
+        // Store token and student info
+        localStorage.setItem('token', result.token);
+        localStorage.setItem('student', JSON.stringify(result.student));
+        
+        alert('تم تسجيل الدخول بنجاح!');
+        closeModal('studentLoginModal');
+        
+        // Redirect to student portal
+        window.location.href = '/student-portal.html';
+      } catch (error) {
+        console.error('Login error:', error);
+        alert(error.message || 'حدث خطأ في الاتصال بالخادم');
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوابة الطالب - EduFlow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/enhanced.css">
+</head>
+<body>
+    <header class="student-header dashboard-header">
+        <h1 class="dashboard-title"><i class="fas fa-user-graduate"></i> مرحباً <span id="studentName">طالبنا العزيز</span></h1>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <div class="academic-year-selector" id="academicYearSelectorContainer" style="display: none; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.1); padding: 0.5rem 1rem; border-radius: 8px;">
+                <i class="fas fa-calendar-alt" style="color: #ffc107;"></i>
+                <span style="font-size: 0.85rem;">السنة:</span>
+                <select id="academicYearSelect" class="form-input" style="min-width: 120px; padding: 0.35rem; font-size: 0.85rem; background: white; color: #333; border-radius: 6px; border: none;" onchange="onAcademicYearChange()">
+                    <option value="current">الحالية</option>
+                </select>
+            </div>
+            <button onclick="logout()" class="btn-primary-school btn-primary">
+                <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+            </button>
+        </div>
+    </header>
+
+    <section class="student-container" id="loginSection">
+        <h2 class="h2-student section-title"><i class="fas fa-key"></i> تسجيل دخول الطالب</h2>
+        <form class="form-student form-card" id="studentLoginForm">
+            <div class="form-group-student">
+                <label for="studentCode">رمز الطالب</label>
+                <input type="text" id="studentCode" placeholder="أدخل رمز الطالب" class="form-control form-input" required>
+            </div>
+            <button type="submit" class="btn-primary-student btn-primary">دخول</button>
+        </form>
+    </section>
+
+    <main class="student-container" id="portalSection" style="display:none">
+        <div class="student-info section-card">
+            <h2 class="h2-student section-title"><i class="fas fa-user"></i> المعلومات الشخصية
+                <span id="academicYearBadge" style="display: none; margin-right: 1rem; background: #ffc107; color: #333; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.8rem; font-weight: normal;">
+                    <i class="fas fa-calendar-alt"></i> <span id="academicYearBadgeText"></span>
+                </span>
+            </h2>
+            <div class="info-grid" id="studentInfo">
+                <!-- سيتم ملؤها بالبيانات -->
+            </div>
+        </div>
+
+        <div class="section-card" id="performanceInsightsSection" style="display:none">
+            <h2 class="h2-student section-title"><i class="fas fa-lightbulb"></i> رؤى الأداء والتوصيات</h2>
+            <div class="performance-insights">
+                <div class="insights-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                    <div class="insight-card" style="background: var(--gray-50); padding: 1.5rem; border-radius: var(--radius-lg); text-align: center; border: 1px solid var(--gray-200);">
+                        <div class="insight-title" style="font-weight: 600; color: var(--gray-600); margin-bottom: 0.5rem;">المعدل العام</div>
+                        <div class="insight-value" id="studentAvgGrade" style="font-size: 2rem; font-weight: 700; color: var(--black);">0</div>
+                    </div>
+                    <div class="insight-card" style="background: var(--gray-50); padding: 1.5rem; border-radius: var(--radius-lg); text-align: center; border: 1px solid var(--gray-200);">
+                        <div class="insight-title" style="font-weight: 600; color: var(--gray-600); margin-bottom: 0.5rem;">التنبؤ بالأداء</div>
+                        <div class="insight-value" id="studentPerformancePrediction" style="font-size: 1.5rem; font-weight: 700; color: var(--black);">متوسط</div>
+                    </div>
+                </div>
+                <div class="recommendations-box" style="margin-top: 1.5rem; padding: 1.5rem; background: #f0f7ff; border-radius: var(--radius-lg); border-right: 5px solid #007bff;">
+                    <h3 style="margin-bottom: 1rem; color: #0056b3;"><i class="fas fa-magic" style="color: #f59e0b;"></i> التوصيات التعليمية الذكية</h3>
+                    <div id="studentRecommendations" style="line-height: 1.6;">-</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('detailed-scores')">الدرجات التفصيلية</div>
+            <div class="tab" onclick="switchTab('attendance')">سجل الحضور</div>
+        </div>
+
+        <!-- قسم الدرجات التفصيلية -->
+        <div id="detailed-scores" class="tab-content active">
+            <section class="section-card">
+                <h2 class="h2-student section-title"><i class="fas fa-chart-bar"></i> الدرجات التفصيلية</h2>
+                <table class="table-student table-enhanced" id="detailedScoresTable">
+                    <thead>
+                        <tr>
+                            <th class="th-student">المادة</th>
+                            <th class="th-student">شهر الأول</th>
+                            <th class="th-student">شهر الثاني</th>
+                            <th class="th-student">نصف السنة</th>
+                            <th class="th-student">شهر الثالث</th>
+                            <th class="th-student">شهر الرابع</th>
+                            <th class="th-student">نهاية السنة</th>
+                            <th class="th-student">النتيجة</th>
+                        </tr>
+                    </thead>
+                    <tbody id="detailedScoresTableBody"></tbody>
+                </table>
+            </section>
+        </div>
+
+        <!-- قسم الحضور -->
+        <div id="attendance" class="tab-content">
+            <section class="section-card">
+                <h2 class="h2-student section-title"><i class="fas fa-calendar-check"></i> سجل الحضور اليومي</h2>
+                <table class="table-student table-enhanced" id="attendanceTable">
+                    <thead>
+                        <tr>
+                            <th class="th-student">التاريخ</th>
+                            <th class="th-student">الحالة العامة</th>
+                            <th class="th-student">تفاصيل الحضور</th>
+                            <th class="th-student">التاريخ المسجل</th>
+                        </tr>
+                    </thead>
+                    <tbody id="attendanceTableBody"></tbody>
+                </table>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        let currentStudent = null;
+        let academicYears = [];
+        let currentAcademicYearId = null;
+        let selectedAcademicYearId = 'current';
+
+        // Check for existing login on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const storedStudent = localStorage.getItem('student');
+            if (storedStudent) {
+                try {
+                    currentStudent = JSON.parse(storedStudent);
+                    if (currentStudent && currentStudent.full_name) {
+                        // Student is already authenticated, show portal directly
+                        document.getElementById('loginSection').style.display = 'none';
+                        document.getElementById('portalSection').style.display = 'block';
+                        document.getElementById('studentName').textContent = currentStudent.full_name;
+                        document.getElementById('performanceInsightsSection').style.display = 'block';
+                        loadAcademicYears();
+                        displayStudentData();
+                    }
+                } catch (e) {
+                    console.error('Error parsing stored student data:', e);
+                    localStorage.removeItem('student');
+                }
+            }
+        });
+
+        // Grade thresholds based on grade scale
+        const GRADE_THRESHOLDS = {
+            scale10: {
+                maxGrade: 10,
+                passThreshold: 5,
+                safeThreshold: 7,
+                atRiskRange: '5-6',
+                safeRange: '7-10',
+                failRange: '0-4'
+            },
+            scale100: {
+                maxGrade: 100,
+                passThreshold: 50,
+                safeThreshold: 70,
+                atRiskRange: '50-69',
+                safeRange: '70-100',
+                failRange: '0-49'
+            }
+        };
+
+        // Period order for trend analysis
+        const PERIOD_ORDER = ['month1', 'month2', 'midterm', 'month3', 'month4', 'final'];
+        const PERIOD_NAMES = {
+            month1: 'شهر الأول',
+            month2: 'شهر الثاني',
+            midterm: 'نصف السنة',
+            month3: 'شهر الثالث',
+            month4: 'شهر الرابع',
+            final: 'نهاية السنة'
+        };
+
+        // Analyze grade trends for a subject
+        function analyzeGradeTrend(grades, maxGrade) {
+            const thresholds = maxGrade === 10 ? 
+                { passThreshold: 5, safeThreshold: 7 } : 
+                { passThreshold: 50, safeThreshold: 70 };
+            
+            const gradeSequence = [];
+            let firstNonZeroIndex = -1;
+            let lastNonZeroIndex = -1;
+            
+            PERIOD_ORDER.forEach((period, index) => {
+                const grade = parseInt(grades[period]) || 0;
+                gradeSequence.push({ period, grade, index });
+                if (grade > 0) {
+                    if (firstNonZeroIndex === -1) firstNonZeroIndex = index;
+                    lastNonZeroIndex = index;
+                }
+            });
+            
+            if (firstNonZeroIndex === -1) {
+                return {
+                    trend: 'none',
+                    hasImprovement: false,
+                    hasDeterioration: false,
+                    recommendations: [],
+                    latestGrade: 0,
+                    firstGrade: 0,
+                    consistency: 'unknown'
+                };
+            }
+            
+            const nonZeroGrades = gradeSequence.filter(g => g.grade > 0);
+            const firstGrade = nonZeroGrades[0];
+            const latestGrade = nonZeroGrades[nonZeroGrades.length - 1];
+            
+            let hasSignificantImprovement = false;
+            let hasSignificantDeterioration = false;
+            let hadZeroBeforeGoodGrade = false;
+            
+            // Check for zeros before good grades
+            for (let i = 0; i < gradeSequence.length; i++) {
+                const current = gradeSequence[i];
+                if (current.grade === 0 && i < lastNonZeroIndex) {
+                    for (let j = i + 1; j < gradeSequence.length; j++) {
+                        if (gradeSequence[j].grade > 0) {
+                            if (gradeSequence[j].grade >= thresholds.safeThreshold) {
+                                hadZeroBeforeGoodGrade = true;
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            // Analyze consecutive grade changes
+            for (let i = 1; i < nonZeroGrades.length; i++) {
+                const prev = nonZeroGrades[i - 1];
+                const curr = nonZeroGrades[i];
+                const changePercent = ((curr.grade - prev.grade) / maxGrade) * 100;
+                
+                if (changePercent >= 30) hasSignificantImprovement = true;
+                if (changePercent <= -30) hasSignificantDeterioration = true;
+            }
+            
+            let trend = 'stable';
+            const overallChangePercent = ((latestGrade.grade - firstGrade.grade) / maxGrade) * 100;
+            if (overallChangePercent >= 20) trend = 'improving';
+            else if (overallChangePercent <= -20) trend = 'declining';
+            
+            const avgGrade = nonZeroGrades.reduce((sum, g) => sum + g.grade, 0) / nonZeroGrades.length;
+            const variance = nonZeroGrades.reduce((sum, g) => sum + Math.pow(g.grade - avgGrade, 2), 0) / nonZeroGrades.length;
+            const consistencyRatio = Math.sqrt(variance) / maxGrade;
+            
+            let consistency = 'consistent';
+            if (consistencyRatio > 0.25) consistency = 'inconsistent';
+            else if (consistencyRatio > 0.15) consistency = 'variable';
+            
+            return {
+                trend,
+                hasImprovement: hasSignificantImprovement || hadZeroBeforeGoodGrade,
+                hasDeterioration: hasSignificantDeterioration,
+                hadZeroBeforeGoodGrade,
+                latestGrade: latestGrade.grade,
+                latestPeriod: latestGrade.period,
+                firstGrade: firstGrade.grade,
+                firstPeriod: firstGrade.period,
+                avgGrade,
+                consistency
+            };
+        }
+
+        // ============================================================================
+        // PROFESSIONAL ACADEMIC RECOMMENDATION ENGINE FOR STUDENT PORTAL
+        // ============================================================================
+        class StudentAcademicAdvisor {
+            constructor(scores, maxGrade, thresholds, studentGrade) {
+                this.scores = scores;
+                this.maxGrade = maxGrade;
+                this.thresholds = thresholds;
+                this.studentGrade = studentGrade;
+                this.analysis = this.analyzePerformance();
+            }
+
+            analyzePerformance() {
+                const subjects = {};
+                let totalGrades = 0;
+                let gradeCount = 0;
+                let strongSubjects = [];
+                let moderateSubjects = [];
+                let weakSubjects = [];
+                let improvingSubjects = [];
+                let decliningSubjects = [];
+                let inconsistentSubjects = [];
+                let missedAssessments = [];
+
+                for (const subject in this.scores) {
+                    const subjectGrades = this.scores[subject];
+                    const trend = analyzeGradeTrend(subjectGrades, this.maxGrade);
+                    
+                    let subjectTotal = 0;
+                    let subjectCount = 0;
+                    let periodGrades = [];
+
+                    PERIOD_ORDER.forEach(period => {
+                        const grade = parseInt(subjectGrades[period]) || 0;
+                        periodGrades.push({ period, grade });
+                        if (grade > 0) {
+                            subjectTotal += grade;
+                            subjectCount++;
+                            totalGrades += grade;
+                            gradeCount++;
+                        } else if (trend.latestGrade > 0) {
+                            const hasLaterGrade = PERIOD_ORDER.slice(PERIOD_ORDER.indexOf(period) + 1)
+                                .some(p => (parseInt(subjectGrades[p]) || 0) > 0);
+                            if (hasLaterGrade) {
+                                missedAssessments.push({ subject, period: PERIOD_NAMES[period] });
+                            }
+                        }
+                    });
+
+                    if (subjectCount > 0) {
+                        const avg = subjectTotal / subjectCount;
+                        const percentage = (avg / this.maxGrade) * 100;
+                        
+                        const subjectData = {
+                            name: subject,
+                            average: avg,
+                            percentage,
+                            trend,
+                            gradeCount: subjectCount,
+                            periodGrades,
+                            latestGrade: trend.latestGrade,
+                            consistency: trend.consistency
+                        };
+
+                        subjects[subject] = subjectData;
+
+                        if (avg >= this.thresholds.safeThreshold) {
+                            strongSubjects.push(subjectData);
+                        } else if (avg >= this.thresholds.passThreshold) {
+                            moderateSubjects.push(subjectData);
+                        } else {
+                            weakSubjects.push(subjectData);
+                        }
+
+                        if (trend.hasImprovement) improvingSubjects.push(subjectData);
+                        if (trend.hasDeterioration) decliningSubjects.push(subjectData);
+                        if (trend.consistency === 'inconsistent') inconsistentSubjects.push(subjectData);
+                    }
+                }
+
+                const overallAvg = gradeCount > 0 ? totalGrades / gradeCount : 0;
+                const overallPercentage = (overallAvg / this.maxGrade) * 100;
+
+                return {
+                    subjects,
+                    overallAvg,
+                    overallPercentage,
+                    strongSubjects: strongSubjects.sort((a, b) => b.average - a.average),
+                    moderateSubjects: moderateSubjects.sort((a, b) => b.average - a.average),
+                    weakSubjects: weakSubjects.sort((a, b) => a.average - b.average),
+                    improvingSubjects,
+                    decliningSubjects,
+                    inconsistentSubjects,
+                    missedAssessments,
+                    totalSubjects: Object.keys(subjects).length,
+                    assessedPeriods: gradeCount
+                };
+            }
+
+            getPerformanceLevel() {
+                const pct = this.analysis.overallPercentage;
+                if (pct >= 90) return { level: 'excellent', label: 'متميز', icon: '🌟' };
+                if (pct >= 80) return { level: 'very-good', label: 'جيد جداً', icon: '⭐' };
+                if (pct >= 70) return { level: 'good', label: 'جيد', icon: '✅' };
+                if (pct >= 60) return { level: 'satisfactory', label: 'مقبول', icon: '🟡' };
+                if (pct >= 50) return { level: 'at-risk', label: 'تحذير', icon: '⚠️' };
+                return { level: 'critical', label: 'حرج', icon: '🚨' };
+            }
+
+            generatePersonalSummary() {
+                const a = this.analysis;
+                const perf = this.getPerformanceLevel();
+                const summary = [];
+
+                summary.push(`<div class="rec-header">${perf.icon} <strong>${perf.label}</strong> | ${a.overallAvg.toFixed(1)}/${this.maxGrade} (${a.overallPercentage.toFixed(0)}%)</div>`);
+                
+                const stats = [];
+                if (a.strongSubjects.length > 0) stats.push(`<span class="rec-badge success">${a.strongSubjects.length} متفوق</span>`);
+                if (a.moderateSubjects.length > 0) stats.push(`<span class="rec-badge warning">${a.moderateSubjects.length} تحذير</span>`);
+                if (a.weakSubjects.length > 0) stats.push(`<span class="rec-badge danger">${a.weakSubjects.length} ضعيف</span>`);
+                if (stats.length > 0) summary.push(`<div class="rec-stats">${stats.join(' ')}</div>`);
+
+                return summary;
+            }
+
+            generateStrengthsSection() {
+                const a = this.analysis;
+                const strengths = [];
+
+                if (a.strongSubjects.length === 0 && a.improvingSubjects.length === 0) {
+                    return [];
+                }
+
+                let items = [];
+                a.strongSubjects.forEach(s => {
+                    let badge = s.trend.trend === 'improving' ? ' ↑' : (s.consistency === 'consistent' ? ' ●' : '');
+                    items.push(`<span class="rec-item success">${s.name} ${s.average.toFixed(1)}${badge}</span>`);
+                });
+
+                const improvingNotStrong = a.improvingSubjects.filter(s => !a.strongSubjects.find(str => str.name === s.name));
+                improvingNotStrong.forEach(s => {
+                    items.push(`<span class="rec-item improving">${s.name} ↑${s.trend.latestGrade}</span>`);
+                });
+
+                if (items.length > 0) {
+                    strengths.push(`<div class="rec-section"><span class="rec-label">💪 نقاط القوة:</span> ${items.join(' ')}</div>`);
+                }
+
+                return strengths;
+            }
+
+            generateImprovementAreas() {
+                const a = this.analysis;
+                const areas = [];
+
+                // Critical subjects
+                if (a.weakSubjects.length > 0) {
+                    let items = a.weakSubjects.map(s => {
+                        let badge = s.trend.hasImprovement ? ' ↑' : (s.trend.hasDeterioration ? ' ↓' : '');
+                        return `<span class="rec-item danger">${s.name} ${s.average.toFixed(1)}${badge}</span>`;
+                    });
+                    areas.push(`<div class="rec-section"><span class="rec-label">🚨 تحتاج تقوية:</span> ${items.join(' ')}</div>`);
+                }
+
+                // At-risk subjects
+                if (a.moderateSubjects.length > 0) {
+                    let items = a.moderateSubjects.map(s => {
+                        const gap = (this.thresholds.safeThreshold - s.average).toFixed(1);
+                        return `<span class="rec-item warning">${s.name} -${gap}</span>`;
+                    });
+                    areas.push(`<div class="rec-section"><span class="rec-label">⚠️ منطقة الخطر:</span> ${items.join(' ')}</div>`);
+                }
+
+                // Declining (not already weak)
+                const decliningNotWeak = a.decliningSubjects.filter(s => !a.weakSubjects.find(w => w.name === s.name));
+                if (decliningNotWeak.length > 0) {
+                    let items = decliningNotWeak.map(s => `<span class="rec-item declining">${s.name} ↓</span>`);
+                    areas.push(`<div class="rec-section"><span class="rec-label">📉 تراجع:</span> ${items.join(' ')}</div>`);
+                }
+
+                // Inconsistent
+                if (a.inconsistentSubjects.length > 0) {
+                    let items = a.inconsistentSubjects.map(s => `<span class="rec-item unstable">${s.name}</span>`);
+                    areas.push(`<div class="rec-section"><span class="rec-label">⚡ غير مستقر:</span> ${items.join(' ')}</div>`);
+                }
+
+                // Missed assessments
+                if (a.missedAssessments.length > 0) {
+                    const grouped = {};
+                    a.missedAssessments.forEach(m => {
+                        if (!grouped[m.subject]) grouped[m.subject] = [];
+                        grouped[m.subject].push(m.period);
+                    });
+                    let items = Object.keys(grouped).map(subj => `<span class="rec-item info">${subj}</span>`);
+                    areas.push(`<div class="rec-section"><span class="rec-label">📋 فاتك:</span> ${items.join(' ')}</div>`);
+                }
+
+                if (areas.length === 0 && a.strongSubjects.length > 0) {
+                    areas.push(`<div class="rec-section success-msg">✅ أداء ممتاز - استمر!</div>`);
+                }
+
+                return areas;
+            }
+
+            generateStudyPlan() {
+                const a = this.analysis;
+                const perf = this.getPerformanceLevel();
+                const plan = [];
+
+                // Only show plan if there are areas to improve
+                if (a.weakSubjects.length === 0 && a.moderateSubjects.length === 0 && 
+                    (perf.level === 'excellent' || perf.level === 'very-good')) {
+                    return [];
+                }
+
+                let tips = [];
+                if (perf.level === 'excellent' || perf.level === 'very-good') {
+                    tips = ['استمر بنفس الأسلوب', 'شارك بالمسابقات'];
+                } else if (perf.level === 'good' || perf.level === 'satisfactory') {
+                    tips = ['+30 دقيقة دراسة يومياً', 'ركز على الفهم'];
+                } else {
+                    tips = ['2-3 ساعات دراسة يومياً', 'دروس تقوية', 'اسأل المعلم'];
+                }
+
+                // Priority subjects
+                let priority = [];
+                if (a.weakSubjects.length > 0) {
+                    priority = a.weakSubjects.slice(0, 3).map(s => s.name);
+                } else if (a.moderateSubjects.length > 0) {
+                    priority = a.moderateSubjects.slice(0, 3).map(s => s.name);
+                }
+
+                if (priority.length > 0) {
+                    plan.push(`<div class="rec-section"><span class="rec-label">📝 الأولوية:</span> <span class="rec-priority">${priority.join('، ')}</span></div>`);
+                }
+                
+                plan.push(`<div class="rec-section"><span class="rec-label">💡 نصائح:</span> <span class="rec-tips">${tips.join(' • ')}</span></div>`);
+
+                return plan;
+            }
+
+            generateMotivationalMessage() {
+                const perf = this.getPerformanceLevel();
+                const messages = [];
+
+                let msg = '';
+                if (perf.level === 'excellent' || perf.level === 'very-good') {
+                    msg = 'تميز واضح! استمر في التفوق.';
+                } else if (perf.level === 'good' || perf.level === 'satisfactory') {
+                    msg = 'أنت على الطريق الصحيح.';
+                } else if (perf.level === 'at-risk') {
+                    msg = 'ابدأ الآن - التحسن ممكن.';
+                } else {
+                    msg = 'كل خطوة تقربك من النجاح.';
+                }
+
+                messages.push(`<div class="rec-motivation">💬 ${msg}</div>`);
+                return messages;
+            }
+
+            generateFullAdvice() {
+                const advice = [];
+                
+                advice.push(...this.generatePersonalSummary());
+                advice.push(...this.generateStrengthsSection());
+                advice.push(...this.generateImprovementAreas());
+                advice.push(...this.generateStudyPlan());
+                advice.push(...this.generateMotivationalMessage());
+                advice.push(`<div class="rec-footer">النجاح: ${this.thresholds.passThreshold}/${this.maxGrade} | الأمان: ${this.thresholds.safeThreshold}+</div>`);
+                
+                return advice;
+            }
+        }
+
+        function generateStudentRecommendations(scores, maxGrade, thresholds, studentGrade) {
+            const advisor = new StudentAcademicAdvisor(scores, maxGrade, thresholds, studentGrade);
+            return advisor.generateFullAdvice();
+        }
+
+        // AI Performance Prediction Model with at-risk thresholds and trend analysis
+        class PerformanceModel {
+            predictPerformance(student) {
+                if (!student || !student.detailed_scores) return { 
+                    level: 'average', 
+                    score: 0, 
+                    recommendations: ['لا توجد بيانات كافية'],
+                    riskLevel: 'unknown',
+                    subjectTrends: {}
+                };
+                
+                const scores = typeof student.detailed_scores === 'string' ? JSON.parse(student.detailed_scores) : student.detailed_scores;
+                let totalGrades = 0;
+                let gradeCount = 0;
+                let maxGrade = this.getMaxGradeForStudent(student.grade);
+                let thresholds = this.getThresholds(maxGrade);
+                let poorSubjects = [];
+                let atRiskSubjects = [];
+                let safeSubjects = [];
+                let improvingSubjects = [];
+                let decliningSubjects = [];
+                let inconsistentSubjects = [];
+                let subjectTrends = {};
+                
+                for (const subject in scores) {
+                    const subjectGrades = scores[subject];
+                    let subjectTotal = 0;
+                    let subjectGradeCount = 0;
+                    
+                    // Analyze trend for this subject
+                    const trendAnalysis = analyzeGradeTrend(subjectGrades, maxGrade);
+                    subjectTrends[subject] = trendAnalysis;
+                    
+                    for (const period in subjectGrades) {
+                        const grade = parseInt(subjectGrades[period]) || 0;
+                        if (grade > 0) {
+                            subjectTotal += grade;
+                            subjectGradeCount++;
+                            totalGrades += grade;
+                            gradeCount++;
+                        }
+                    }
+                    
+                    if (subjectGradeCount > 0) {
+                        const subjectAvg = subjectTotal / subjectGradeCount;
+                        const subjectData = {
+                            name: subject,
+                            avg: subjectAvg,
+                            trend: trendAnalysis,
+                            latestGrade: trendAnalysis.latestGrade
+                        };
+                        
+                        if (subjectAvg < thresholds.passThreshold) {
+                            poorSubjects.push(subjectData);
+                        } else if (subjectAvg < thresholds.safeThreshold) {
+                            atRiskSubjects.push(subjectData);
+                        } else {
+                            safeSubjects.push(subjectData);
+                        }
+                        
+                        // Track trend categories
+                        if (trendAnalysis.hasImprovement) {
+                            improvingSubjects.push(subjectData);
+                        }
+                        if (trendAnalysis.hasDeterioration) {
+                            decliningSubjects.push(subjectData);
+                        }
+                        if (trendAnalysis.consistency === 'inconsistent') {
+                            inconsistentSubjects.push(subjectData);
+                        }
+                    }
+                }
+
+                const avg = gradeCount > 0 ? (totalGrades / (gradeCount * maxGrade)) * 100 : 0;
+                const rawAvg = gradeCount > 0 ? totalGrades / gradeCount : 0;
+                let level = 'average';
+                let riskLevel = 'safe';
+
+                const safePercentage = (thresholds.safeThreshold / maxGrade) * 100;
+                const passPercentage = (thresholds.passThreshold / maxGrade) * 100;
+
+                if (avg >= 90) {
+                    level = 'excellent';
+                    riskLevel = 'safe';
+                } else if (avg >= safePercentage) {
+                    level = 'good';
+                    riskLevel = 'safe';
+                } else if (avg >= passPercentage) {
+                    level = 'average';
+                    riskLevel = 'at-risk';
+                } else {
+                    level = 'needs-improvement';
+                    riskLevel = 'fail';
+                }
+
+                // Generate professional comprehensive recommendations
+                const recommendations = generateStudentRecommendations(scores, maxGrade, thresholds, student.grade);
+
+                return { 
+                    level, 
+                    score: avg, 
+                    recommendations, 
+                    riskLevel, 
+                    rawAvg, 
+                    maxGrade,
+                    thresholds,
+                    subjectTrends,
+                    improvingSubjects,
+                    decliningSubjects,
+                    inconsistentSubjects,
+                    poorSubjects,
+                    atRiskSubjects,
+                    safeSubjects
+                };
+            }
+
+            getMaxGradeForStudent(studentGrade) {
+                if (!studentGrade) return 100;
+                
+                // Extract the grade parts from the grade string (e.g., "ابتدائي - الأول الابتدائي")
+                const gradeParts = studentGrade.split(' - ');
+                if (gradeParts.length < 2) return 100;
+                
+                const educationalLevel = gradeParts[0].trim(); // e.g., "ابتدائي"
+                const gradeLevel = gradeParts[1].trim(); // e.g., "الأول الابتدائي"
+                
+                // Check if this is an elementary (ابتدائي) school level
+                const isElementary = educationalLevel.includes('ابتدائي') || 
+                                     gradeLevel.includes('ابتدائي') || 
+                                     gradeLevel.includes('الابتدائي');
+                
+                // Only apply 10-point scale to elementary grades 1-4
+                if (isElementary) {
+                    // Check if grade is first, second, third, or fourth
+                    // Handle both formats: with and without the definite article "ال"
+                    const isGrades1to4 = gradeLevel.includes('الأول') || gradeLevel.includes('الثاني') || 
+                                         gradeLevel.includes('الثالث') || gradeLevel.includes('الرابع') ||
+                                         gradeLevel.includes('اول') || gradeLevel.includes('ثاني') || 
+                                         gradeLevel.includes('ثالث') || gradeLevel.includes('رابع') ||
+                                         gradeLevel.includes('الاول');
+                    
+                    // Make sure it's NOT fifth or sixth grade (which should use 100-point scale)
+                    const isGrades5or6 = gradeLevel.includes('الخامس') || gradeLevel.includes('السادس') ||
+                                         gradeLevel.includes('خامس') || gradeLevel.includes('سادس');
+                    
+                    if (isGrades1to4 && !isGrades5or6) {
+                        return 10;
+                    }
+                }
+                
+                // For all other grades (including elementary 5-6, middle, secondary, preparatory), max grade is 100
+                return 100;
+            }
+
+            getThresholds(maxGrade) {
+                return maxGrade === 10 ? GRADE_THRESHOLDS.scale10 : GRADE_THRESHOLDS.scale100;
+            }
+        }
+
+        const aiModel = new PerformanceModel();
+
+        document.getElementById('studentLoginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const code = document.getElementById('studentCode').value;
+            const res = await fetch('/api/student/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code })
+            });
+            const data = await res.json();
+            if (data.error) alert(data.error);
+            else {
+                currentStudent = data.student;
+                localStorage.setItem('student', JSON.stringify(currentStudent));
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('portalSection').style.display = 'block';
+                document.getElementById('studentName').textContent = currentStudent.full_name;
+                document.getElementById('performanceInsightsSection').style.display = 'block';
+                loadAcademicYears();
+                displayStudentData();
+            }
+        });
+
+        // التبديل بين علامات التبويب
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            document.querySelector(`.tab:nth-child(${tabId === 'detailed-scores' ? 1 : 2})`).classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // Get grade status with at-risk thresholds and trend info
+        function getGradeStatus(gradeValue, maxGrade, trendAnalysis = null) {
+            const thresholds = maxGrade === 10 ? GRADE_THRESHOLDS.scale10 : GRADE_THRESHOLDS.scale100;
+            
+            // Build trend icon and info
+            let trendIcon = '';
+            let trendInfo = '';
+            
+            if (trendAnalysis) {
+                if (trendAnalysis.hadZeroBeforeGoodGrade) {
+                    trendIcon = ' 📈';
+                    trendInfo = `تحسن ممتاز من 0 إلى ${trendAnalysis.latestGrade}/${maxGrade}`;
+                } else if (trendAnalysis.hasImprovement) {
+                    trendIcon = ' ↑';
+                    trendInfo = `مسار تصاعدي: ${trendAnalysis.firstGrade} → ${trendAnalysis.latestGrade}`;
+                } else if (trendAnalysis.hasDeterioration) {
+                    trendIcon = ' ↓';
+                    trendInfo = `مسار تنازلي: ${trendAnalysis.firstGrade} → ${trendAnalysis.latestGrade}`;
+                } else if (trendAnalysis.consistency === 'inconsistent') {
+                    trendIcon = ' ⚡';
+                    trendInfo = 'أداء غير مستقر';
+                }
+            }
+            
+            if (gradeValue === 0) {
+                return { status: 'pending', text: 'معلق', cssClass: 'grade-pending', recommendation: '', trendIcon: '', trendInfo: '' };
+            } else if (gradeValue >= thresholds.safeThreshold) {
+                let recommendation = 'أداء ممتاز';
+                if (trendAnalysis && trendAnalysis.hadZeroBeforeGoodGrade) {
+                    recommendation = `تحسن ممتاز! استمر في الحفاظ على الاستمرارية.`;
+                }
+                return { status: 'safe', text: 'ناجح ✅' + trendIcon, cssClass: 'grade-safe', recommendation, trendIcon, trendInfo };
+            } else if (gradeValue >= thresholds.passThreshold) {
+                let recommendation = 'في منطقة الخطر';
+                if (trendAnalysis && trendAnalysis.hasImprovement) {
+                    recommendation = `مسار تصاعدي! استمر للوصول للمنطقة الآمنة.`;
+                } else if (trendAnalysis && trendAnalysis.hasDeterioration) {
+                    recommendation = `تحذير: مسار تنازلي - يحتاج تدخل عاجل`;
+                }
+                return { status: 'at-risk', text: 'ناجح (تحذير) ⚠️' + trendIcon, cssClass: 'grade-at-risk', recommendation, trendIcon, trendInfo };
+            } else {
+                let recommendation = 'يحتاج تقوية';
+                if (trendAnalysis && trendAnalysis.hasImprovement) {
+                    recommendation = `تحسن ملحوظ! استمر للوصول لدرجة النجاح.`;
+                }
+                return { status: 'fail', text: 'راسب ❌' + trendIcon, cssClass: 'grade-fail', recommendation, trendIcon, trendInfo };
+            }
+        }
+
+        function displayStudentData() {
+            // عرض المعلومات الشخصية
+            document.getElementById('studentInfo').innerHTML = `
+                <div class="info-item">
+                    <div class="info-label">الاسم الكامل:</div>
+                    <div>${currentStudent.full_name}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">الصف:</div>
+                    <div>${currentStudent.grade}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">الفرع:</div>
+                    <div>${currentStudent.branch || 'لا يوجد'}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">رقم القاعة:</div>
+                    <div>${currentStudent.room}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">رمز الطالب:</div>
+                    <div><code class="code-btn" onclick="copyToClipboard('${currentStudent.student_code}')">${currentStudent.student_code}</code></div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label"><i class="fas fa-phone"></i> رقم ولي الأمر:</div>
+                    <div>${currentStudent.parent_contact || 'غير محدد'}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label"><i class="fas fa-tint"></i> فصيلة الدم:</div>
+                    <div>${currentStudent.blood_type || 'غير محدد'}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label"><i class="fas fa-heartbeat"></i> الأمراض المزمنة:</div>
+                    <div>${currentStudent.chronic_disease || 'لا يوجد'}</div>
+                </div>
+            `;
+            
+            // عرض الدرجات التفصيلية
+            const detailedScores = JSON.parse(currentStudent.detailed_scores || '{}');
+            const tbody = document.getElementById('detailedScoresTableBody');
+            tbody.innerHTML = '';
+            
+            // Get max grade for this student
+            const maxGrade = aiModel.getMaxGradeForStudent(currentStudent.grade);
+            const thresholds = aiModel.getThresholds(maxGrade);
+            
+            Object.entries(detailedScores).forEach(([subject, scores]) => {
+                const month1 = parseFloat(scores.month1) || 0;
+                const month2 = parseFloat(scores.month2) || 0;
+                const midterm = parseFloat(scores.midterm) || 0;
+                const month3 = parseFloat(scores.month3) || 0;
+                const month4 = parseFloat(scores.month4) || 0;
+                const final = parseFloat(scores.final) || 0;
+                
+                // Analyze trend for this subject
+                const trendAnalysis = analyzeGradeTrend(scores, maxGrade);
+                
+                // Get the latest grade entered (from final to month1)
+                const periods = ['final', 'month4', 'month3', 'midterm', 'month2', 'month1'];
+                let latestGrade = 0;
+                
+                for (let period of periods) {
+                    const grade = parseFloat(scores[period]) || 0;
+                    if (grade > 0) {
+                        latestGrade = grade;
+                        break;
+                    }
+                }
+                
+                // Use enhanced grade status with trend analysis
+                const gradeStatus = getGradeStatus(latestGrade, maxGrade, trendAnalysis);
+                
+                // Build tooltip for trend info
+                const trendTooltip = gradeStatus.trendInfo ? `title="${gradeStatus.trendInfo}"` : '';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="td-student">${subject}</td>
+                    <td class="td-student">${month1}</td>
+                    <td class="td-student">${month2}</td>
+                    <td class="td-student">${midterm}</td>
+                    <td class="td-student">${month3}</td>
+                    <td class="td-student">${month4}</td>
+                    <td class="td-student">${final}</td>
+                    <td class="td-student"><span class="${gradeStatus.cssClass}" ${trendTooltip}>${gradeStatus.text}</span></td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            if (Object.keys(detailedScores).length === 0) {
+                tbody.innerHTML = '<tr><td class="td-student" colspan="8">لا توجد درجات مسجلة</td></tr>';
+            }
+            
+            // عرض سجل الحضور اليومي
+            const dailyAttendance = JSON.parse(currentStudent.daily_attendance || '{}');
+            const attendanceTbody = document.getElementById('attendanceTableBody');
+            attendanceTbody.innerHTML = '';
+            
+            const dates = Object.keys(dailyAttendance).sort().reverse();
+            
+            dates.forEach(date => {
+                const attendance = dailyAttendance[date];
+                const row = document.createElement('tr');
+                
+                // Calculate overall status
+                let overallStatus = 'غير محدد';
+                let statusClass = '';
+                
+                if (attendance.status === 'present') {
+                    overallStatus = 'حاضر';
+                    statusClass = 'status-present';
+                } else if (attendance.status === 'absent') {
+                    overallStatus = 'غائب';
+                    statusClass = 'status-absent';
+                } else if (attendance.status === 'late') {
+                    overallStatus = 'متأخر';
+                    statusClass = 'status-late';
+                } else if (attendance.status === 'excused') {
+                    overallStatus = 'معذور';
+                    statusClass = 'status-excused';
+                }
+                
+                row.innerHTML = `
+                    <td class="td-student">${date}</td>
+                    <td class="td-student"><span class="${statusClass}">${overallStatus}</span></td>
+                    <td class="td-student">${attendance.details || 'لا توجد تفاصيل'}</td>
+                    <td class="td-student">${attendance.recorded_at || date}</td>
+                `;
+                attendanceTbody.appendChild(row);
+            });
+            
+            if (dates.length === 0) {
+                attendanceTbody.innerHTML = '<tr><td class="td-student" colspan="4">لا توجد سجلات حضور</td></tr>';
+            }
+
+            // تحديث رؤى الأداء مع مستويات الخطر
+            const prediction = aiModel.predictPerformance(currentStudent);
+            
+            // Update average display
+            const avgDisplay = prediction.rawAvg ? prediction.rawAvg.toFixed(1) + '/' + prediction.maxGrade : prediction.score.toFixed(1) + '%';
+            document.getElementById('studentAvgGrade').textContent = avgDisplay;
+            
+            // Update performance prediction with risk level indicator
+            let performanceText = '';
+            let performanceClass = '';
+            
+            switch(prediction.level) {
+                case 'excellent':
+                    performanceText = 'ممتاز 🌟';
+                    performanceClass = 'safe';
+                    break;
+                case 'good':
+                    performanceText = 'جيد ✅';
+                    performanceClass = 'safe';
+                    break;
+                case 'average':
+                    performanceText = 'متوسط ⚠️';
+                    performanceClass = 'at-risk';
+                    break;
+                default:
+                    performanceText = 'يحتاج تحسناً ❌';
+                    performanceClass = 'fail';
+            }
+            
+            const predictionElem = document.getElementById('studentPerformancePrediction');
+            predictionElem.textContent = performanceText;
+            predictionElem.className = 'insight-value risk-indicator ' + performanceClass;
+            
+            // Update insight cards based on risk level
+            const insightCards = document.querySelectorAll('.insight-card');
+            insightCards.forEach(card => {
+                card.classList.remove('safe', 'at-risk', 'fail');
+                card.classList.add(prediction.riskLevel);
+            });
+            
+            // Update recommendations box style based on risk level
+            const recommendationsBox = document.querySelector('.recommendations-box');
+            if (recommendationsBox) {
+                recommendationsBox.style.borderRightColor = 
+                    prediction.riskLevel === 'safe' ? '#28a745' :
+                    prediction.riskLevel === 'at-risk' ? '#ffc107' : '#dc3545';
+                recommendationsBox.style.background = 
+                    prediction.riskLevel === 'safe' ? '#f0fff4' :
+                    prediction.riskLevel === 'at-risk' ? '#fffbf0' : '#fff5f5';
+            }
+            
+            const recommendationsElem = document.getElementById('studentRecommendations');
+            if (prediction.recommendations.length > 0) {
+                recommendationsElem.innerHTML = prediction.recommendations.map(r => {
+                    if (r === '') return '<br>';
+                    return `<div style="margin-bottom:0.5rem">${r}</div>`;
+                }).join('');
+            } else {
+                recommendationsElem.textContent = '-';
+            }
+        }
+
+        // دالة نسخ النص إلى الحافظة
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification(`تم نسخ الرمز: ${text}`, 'info');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showNotification(`تم نسخ الرمز: ${text}`, 'info');
+            });
+        }
+
+        // إشعارات
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+
+        // تسجيل الخروج
+        function logout() {
+            if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+                localStorage.removeItem('student');
+                window.location.href = '/index.html';
+            }
+        }
+
+        // ============================================================================
+        // ACADEMIC YEAR MANAGEMENT FOR STUDENT PORTAL
+        // ============================================================================
+
+        // Load academic years for the student's school
+        async function loadAcademicYears() {
+            if (!currentStudent || !currentStudent.school_id) {
+                console.log('No student or school_id available');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/school/${currentStudent.school_id}/academic-years`);
+                const result = await response.json();
+
+                if (result.success && result.academic_years && result.academic_years.length > 0) {
+                    academicYears = result.academic_years;
+                    
+                    // Find current academic year (automatically determined by server based on date)
+                    const currentYear = academicYears.find(y => y.is_current === 1);
+                    if (currentYear) {
+                        currentAcademicYearId = currentYear.id;
+                    }
+
+                    updateAcademicYearSelector();
+                    
+                    // Show the selector
+                    document.getElementById('academicYearSelectorContainer').style.display = 'flex';
+                } else {
+                    // No academic years defined for this school
+                    document.getElementById('academicYearSelectorContainer').style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error loading academic years:', error);
+            }
+        }
+
+        // Update academic year selector dropdown
+        // The current year is marked automatically based on the present date
+        function updateAcademicYearSelector() {
+            const select = document.getElementById('academicYearSelect');
+            select.innerHTML = '';
+
+            academicYears.forEach(year => {
+                const isCurrent = year.is_current === 1;
+                const option = document.createElement('option');
+                option.value = year.id;
+                option.textContent = isCurrent ? `${year.name} (الحالية)` : year.name;
+                if (isCurrent || currentAcademicYearId === year.id) {
+                    option.selected = true;
+                }
+                select.appendChild(option);
+            });
+
+            // If we have a current year, select it
+            if (currentAcademicYearId) {
+                select.value = currentAcademicYearId;
+                selectedAcademicYearId = currentAcademicYearId;
+            }
+
+            updateAcademicYearBadge();
+        }
+
+        // Update academic year badge display
+        function updateAcademicYearBadge() {
+            const badge = document.getElementById('academicYearBadge');
+            const badgeText = document.getElementById('academicYearBadgeText');
+
+            if (!selectedAcademicYearId || selectedAcademicYearId == currentAcademicYearId) {
+                badge.style.display = 'none';
+            } else {
+                const selectedYear = academicYears.find(y => y.id == selectedAcademicYearId);
+                if (selectedYear) {
+                    badgeText.textContent = selectedYear.name;
+                    badge.style.display = 'inline-block';
+                }
+            }
+        }
+
+        // Handle academic year change
+        async function onAcademicYearChange() {
+            const select = document.getElementById('academicYearSelect');
+            selectedAcademicYearId = select.value;
+
+            updateAcademicYearBadge();
+
+            // If the current year is selected, load default data
+            if (selectedAcademicYearId == currentAcademicYearId) {
+                displayStudentData();
+            } else {
+                // Load data for the selected academic year
+                await loadDataForAcademicYear(selectedAcademicYearId);
+            }
+        }
+
+        // Load grades and attendance for a specific academic year
+        async function loadDataForAcademicYear(yearId) {
+            if (!currentStudent) return;
+
+            try {
+                // Load grades for the year
+                const gradesResponse = await fetch(`/api/student/${currentStudent.id}/grades/${yearId}`);
+                const gradesResult = await gradesResponse.json();
+
+                // Load attendance for the year
+                const attendanceResponse = await fetch(`/api/student/${currentStudent.id}/attendance/${yearId}`);
+                const attendanceResult = await attendanceResponse.json();
+
+                // Display data
+                if (gradesResult.success && gradesResult.grades) {
+                    displayScoresForYear(gradesResult.grades);
+                } else {
+                    displayNoDataMessage('detailedScoresTableBody', 'لا توجد درجات مسجلة لهذه السنة الدراسية');
+                }
+
+                if (attendanceResult.success && attendanceResult.attendance && attendanceResult.attendance.length > 0) {
+                    displayAttendanceForYear(attendanceResult.attendance);
+                } else {
+                    displayNoDataMessage('attendanceTableBody', 'لا توجد سجلات حضور لهذه السنة الدراسية');
+                }
+
+                // Update performance insights for this year
+                if (gradesResult.success && gradesResult.grades) {
+                    updatePerformanceInsightsForYear(gradesResult.grades);
+                }
+
+            } catch (error) {
+                console.error('Error loading data for academic year:', error);
+                showNotification('حدث خطأ في تحميل البيانات', 'error');
+            }
+        }
+
+        // Display grades for a specific academic year
+        function displayScoresForYear(grades) {
+            const tbody = document.getElementById('detailedScoresTableBody');
+            tbody.innerHTML = '';
+
+            const maxGrade = aiModel.getMaxGradeForStudent(currentStudent.grade);
+
+            if (grades.length === 0) {
+                tbody.innerHTML = '<tr><td class="td-student" colspan="8">لا توجد درجات مسجلة لهذه السنة</td></tr>';
+                return;
+            }
+
+            grades.forEach(grade => {
+                const scores = {
+                    month1: grade.month1 || 0,
+                    month2: grade.month2 || 0,
+                    midterm: grade.midterm || 0,
+                    month3: grade.month3 || 0,
+                    month4: grade.month4 || 0,
+                    final: grade.final || 0
+                };
+
+                const trendAnalysis = analyzeGradeTrend(scores, maxGrade);
+                const latestGrade = trendAnalysis.latestGrade || 0;
+                const gradeStatus = getGradeStatus(latestGrade, maxGrade, trendAnalysis);
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="td-student">${grade.subject_name}</td>
+                    <td class="td-student">${scores.month1}</td>
+                    <td class="td-student">${scores.month2}</td>
+                    <td class="td-student">${scores.midterm}</td>
+                    <td class="td-student">${scores.month3}</td>
+                    <td class="td-student">${scores.month4}</td>
+                    <td class="td-student">${scores.final}</td>
+                    <td class="td-student"><span class="${gradeStatus.cssClass}">${gradeStatus.text}</span></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Display attendance for a specific academic year
+        function displayAttendanceForYear(attendanceRecords) {
+            const tbody = document.getElementById('attendanceTableBody');
+            tbody.innerHTML = '';
+
+            if (attendanceRecords.length === 0) {
+                tbody.innerHTML = '<tr><td class="td-student" colspan="4">لا توجد سجلات حضور لهذه السنة</td></tr>';
+                return;
+            }
+
+            // Sort by date descending
+            attendanceRecords.sort((a, b) => new Date(b.attendance_date) - new Date(a.attendance_date));
+
+            attendanceRecords.forEach(record => {
+                let statusText = 'حاضر';
+                let statusClass = 'status-present';
+
+                if (record.status === 'absent') {
+                    statusText = 'غائب';
+                    statusClass = 'status-absent';
+                } else if (record.status === 'late') {
+                    statusText = 'متأخر';
+                    statusClass = 'status-late';
+                } else if (record.status === 'excused') {
+                    statusText = 'معذور';
+                    statusClass = 'status-excused';
+                }
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="td-student">${record.attendance_date}</td>
+                    <td class="td-student"><span class="${statusClass}">${statusText}</span></td>
+                    <td class="td-student">${record.notes || '-'}</td>
+                    <td class="td-student">${record.created_at ? new Date(record.created_at).toLocaleDateString('ar-SA') : '-'}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Update performance insights for a specific academic year
+        function updatePerformanceInsightsForYear(grades) {
+            // Convert grades array to detailed_scores format
+            const detailedScores = {};
+            grades.forEach(grade => {
+                detailedScores[grade.subject_name] = {
+                    month1: grade.month1 || 0,
+                    month2: grade.month2 || 0,
+                    midterm: grade.midterm || 0,
+                    month3: grade.month3 || 0,
+                    month4: grade.month4 || 0,
+                    final: grade.final || 0
+                };
+            });
+
+            // Create a temporary student object with the grades for this year
+            const tempStudent = { ...currentStudent, detailed_scores: JSON.stringify(detailedScores) };
+
+            // Run prediction
+            const prediction = aiModel.predictPerformance(tempStudent);
+
+            // Update UI
+            const avgDisplay = prediction.rawAvg ? prediction.rawAvg.toFixed(1) + '/' + prediction.maxGrade : prediction.score.toFixed(1) + '%';
+            document.getElementById('studentAvgGrade').textContent = avgDisplay;
+
+            // Update performance prediction
+            let performanceText = '';
+            let performanceClass = '';
+
+            switch(prediction.level) {
+                case 'excellent':
+                    performanceText = 'ممتاز 🌟';
+                    performanceClass = 'safe';
+                    break;
+                case 'good':
+                    performanceText = 'جيد ✅';
+                    performanceClass = 'safe';
+                    break;
+                case 'average':
+                    performanceText = 'متوسط ⚠️';
+                    performanceClass = 'at-risk';
+                    break;
+                default:
+                    performanceText = 'يحتاج تحسناً ❌';
+                    performanceClass = 'fail';
+            }
+
+            const predictionElem = document.getElementById('studentPerformancePrediction');
+            predictionElem.textContent = performanceText;
+            predictionElem.className = 'insight-value risk-indicator ' + performanceClass;
+
+            // Update recommendations
+            const recommendationsElem = document.getElementById('studentRecommendations');
+            if (prediction.recommendations.length > 0) {
+                recommendationsElem.innerHTML = prediction.recommendations.map(r => {
+                    if (r === '') return '<br>';
+                    return `<div style="margin-bottom:0.5rem">${r}</div>`;
+                }).join('');
+            } else {
+                recommendationsElem.textContent = '-';
+            }
+        }
+
+        // Display no data message
+        function displayNoDataMessage(tbodyId, message) {
+            const tbody = document.getElementById(tbodyId);
+            if (tbody) {
+                const colspan = tbodyId === 'detailedScoresTableBody' ? 8 : 4;
+                tbody.innerHTML = `<tr><td class="td-student" colspan="${colspan}">${message}</td></tr>`;
+            }
+        }
+    </script>
+</body>
+</html>
